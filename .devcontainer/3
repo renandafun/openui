@@ -1,0 +1,298 @@
+Imports System.Data.OleDb
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
+Public Class Form3
+    Dim da As New OleDbDataAdapter
+    Dim dset As New DataSet
+    Dim cmd As OleDbCommand
+    Dim dr As OleDbDataReader
+    Dim sql As String
+    Dim i, a, b As Integer
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        Dim cmd As OleDbCommand
+        Dim dr As OleDbDataReader
+        Dim sql As String
+
+        conn.Open()
+        sql = "Select * from tblRegistration WHERE ISBN='" & TextBox1.Text & "'"
+        cmd = New OleDbCommand(sql, conn)
+        dr = cmd.ExecuteReader()
+        TextBox2.Text = ""
+        TextBox3.Text = ""
+        TextBox4.Text = ""
+
+        i = 0
+        Do While dr.Read = True
+            TextBox2.Text = dr(1)
+            TextBox3.Text = dr(2)
+            TextBox4.Text = dr(3)
+
+            If i = 0 Then
+                i = 1
+            End If
+        Loop
+
+        If i > 0 Then
+            MsgBox("Record found")
+
+        Else
+            MsgBox("No record found!")
+        End If
+
+        conn.Close()
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Dim cmd As OleDbCommand
+        Dim dr As OleDbDataReader
+        Dim sql As String
+
+        conn.Open()
+        sql = "Select * from tblSales WHERE TranNo='" & TextBox5.Text & "'"
+        cmd = New OleDbCommand(sql, conn)
+        dr = cmd.ExecuteReader()
+        TextBox1.Text = ""
+        TextBox2.Text = ""
+        TextBox3.Text = ""
+        TextBox4.Text = ""
+        Text6.Text = ""
+        TextBox7.Text = ""
+        TextBox8.Text = ""
+        i = 0
+        Do While dr.Read = True
+            TextBox1.Text = dr(4)
+            TextBox2.Text = dr(5)
+            TextBox3.Text = dr(6)
+            TextBox4.Text = dr(7)
+            Text6.Text = dr(1)
+            TextBox7.Text = dr(2)
+            TextBox8.Text = dr(3)
+            If i = 0 Then
+                i = 1
+            End If
+        Loop
+
+        If i > 0 Then
+            MsgBox("Record found")
+
+        Else
+            MsgBox("No record found!")
+        End If
+
+        conn.Close()
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        Dim sql As String
+        Dim cmd As New OleDb.OleDbCommand
+        conn.Open()
+
+        sql = "Delete * from tblSales WHERE TranNo='" & TextBox5.Text & "'"
+        cmd.Connection = conn
+        cmd.CommandText = sql
+
+        i = cmd.ExecuteNonQuery
+        If i > 0 Then
+            TextBox1.Text = ""
+            TextBox2.Text = ""
+            TextBox3.Text = ""
+            TextBox4.Text = ""
+            TextBox5.Text = ""
+            Text6.Text = ""
+            TextBox7.Text = ""
+            TextBox8.Text = ""
+            MsgBox("Record has been deleted successfully!")
+        Else
+            MsgBox("No record has been deleted!")
+        End If
+
+        conn.Close()
+    End Sub
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
+        TextBox1.Text = ""
+        TextBox2.Text = ""
+        TextBox3.Text = ""
+        TextBox4.Text = ""
+        Text6.Text = ""
+        TextBox7.Text = ""
+        TextBox8.Text = ""
+    End Sub
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+
+        Label9.Text = DateTime.Now.ToString("hh:mm:ss tt")
+        Label12.Text = DateTime.Now.ToString("MMMMM/dddd/yyyy")
+    End Sub
+
+    Private Sub Form3_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Timer1.Start()
+        conn.Open()
+        sql = "Select * from tblReceiptNum"
+        cmd = New OleDbCommand(sql, conn)
+        dr = cmd.ExecuteReader()
+
+        dr.Read()
+
+        TextBox5.Text = Val(dr(0)) + 1
+
+        conn.Close()
+
+    End Sub
+
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+        Form1.Show()
+        Me.Hide()
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Form2.Show()
+        Me.Hide()
+    End Sub
+
+    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+        ListView1.Items.Clear()
+
+        ' SQL command to retrieve all data
+        Dim sql As String = "Select * from tblRegistration"
+
+        ' Open connection
+        conn.Open()
+
+        ' Execute SQL command
+        Dim cmd As New OleDbCommand(sql, conn)
+        Dim dr As OleDbDataReader = cmd.ExecuteReader()
+
+        ' Loop through the results and populate ListView
+        While dr.Read()
+            Dim item As New ListViewItem(dr(0).ToString()) ' Assuming the first column is ISBN
+            item.SubItems.Add(dr(1).ToString()) ' Title
+            item.SubItems.Add(dr(2).ToString()) ' Author
+            item.SubItems.Add(dr(3).ToString()) ' Publication
+
+            ListView1.Items.Add(item)
+        End While
+
+        ' Close connection
+        conn.Close()
+
+        ' Display message if records found or not
+        If ListView1.Items.Count > 0 Then
+            MsgBox("Records found")
+        Else
+            MsgBox("No records found!")
+        End If
+
+    End Sub
+
+    Private Sub TextBox7_TextChanged(sender As Object, e As EventArgs) Handles TextBox7.TextChanged
+
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Dim sql As String
+        Dim cmd As New OleDb.OleDbCommand
+        conn.Open()
+
+        sql = "INSERT INTO tblSales (TranNo,pisbn,title,author,publication,trantype,pid,pname) values ('" & TextBox5.Text & "','" & TextBox1.Text & "', '" & TextBox2.Text & "','" & TextBox3.Text & "','" & TextBox4.Text & "'
+, '" & Text6.Text & "','" & TextBox7.Text & "','" & TextBox8.Text & "');"
+        cmd.Connection = conn
+        cmd.CommandText = sql
+        i = cmd.ExecuteNonQuery
+        If b = 0 Then
+            sql = "UPDATE tblReceiptNum SET TranNon='" & TextBox5.Text & "'"
+            cmd = New OleDbCommand(sql, conn)
+            cmd.Connection = conn
+            cmd.CommandText = sql
+            i = cmd.ExecuteNonQuery()
+        End If
+
+        MsgBox("Transaction has been saved")
+
+        conn.Close()
+    End Sub
+
+    Private Sub Text6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Text6.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
+
+    End Sub
+
+    Private Sub Label7_Click(sender As Object, e As EventArgs) Handles Label7.Click
+
+    End Sub
+
+    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TextBox1.KeyPress
+        If Asc(e.KeyChar) = 13 Then
+            Dim cmd As OleDbCommand
+            Dim dr As OleDbDataReader
+            Dim sql As String
+
+            conn.Open()
+            sql = "Select * from tblRegistration WHERE ISBN='" & TextBox1.Text & "'"
+            cmd = New OleDbCommand(sql, conn)
+            dr = cmd.ExecuteReader()
+            TextBox1.Text = ""
+            TextBox2.Text = ""
+            TextBox3.Text = ""
+            TextBox4.Text = ""
+
+            i = 0
+            Do While dr.Read = True
+                TextBox1.Text = dr(0)
+                TextBox2.Text = dr(1)
+                TextBox3.Text = dr(2)
+                TextBox4.Text = dr(3)
+
+                If i = 0 Then
+                    i = 1
+                End If
+            Loop
+
+            If i > 0 Then
+            Else
+
+            End If
+
+            conn.Close()
+        End If
+    End Sub
+
+    Private Sub TextBox7_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TextBox7.KeyPress
+        If Asc(e.KeyChar) = 13 Then
+            Dim cmd As OleDbCommand
+            Dim dr As OleDbDataReader
+            Dim sql As String
+
+            conn.Open()
+            sql = "Select * from RegID WHERE NoID='" & TextBox7.Text & "'"
+            cmd = New OleDbCommand(sql, conn)
+            dr = cmd.ExecuteReader()
+            TextBox7.Text = ""
+            TextBox8.Text = ""
+            i = 0
+            Do While dr.Read = True
+                TextBox7.Text = dr(0)
+                TextBox8.Text = dr(1)
+
+                If i = 0 Then
+                    i = 1
+                End If
+            Loop
+
+            If i > 0 Then
+            Else
+
+            End If
+
+            conn.Close()
+        End If
+    End Sub
+End Class
