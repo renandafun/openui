@@ -1,1 +1,85 @@
-frontend/public/annotator/
+Imports System.Data.SqlClient
+Imports MySql.Data.MySqlClient
+
+Public Class Form3
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Me.Close()
+        isbn_tb.Text = Nothing
+        title_tb.Text = Nothing
+        author_tb.Text = Nothing
+        public_tb.Text = Nothing
+        copies_tb.Text = Nothing
+        Form2.Show()
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles add_btn.Click
+        'Save Data to our Database
+        Try
+            Save("INSERT INTO bookreg (ISBN, Title, Author, Publication, Copies) VALUES('" & isbn_tb.Text & "','" & title_tb.Text & "','" & author_tb.Text & "', '" & public_tb.Text & "', '" & copies_tb.Text & "')")
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+        isbn_tb.Text = Nothing
+        title_tb.Text = Nothing
+        author_tb.Text = Nothing
+        public_tb.Text = Nothing
+        copies_tb.Text = Nothing
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles search_btn.Click
+        ' Search in Database and Display in TextBox
+        Dim connString As String = "server=localhost; user id=root; password=; database=library_db;"
+        Dim sqlQuery As String = "SELECT * FROM `bookreg` WHERE ISBN = @ISBN"
+
+        Using sqlConn As New MySqlConnection(connString)
+            Using sqlComm As New MySqlCommand(sqlQuery, sqlConn)
+                sqlComm.Parameters.AddWithValue("@ISBN", isbn_tb.Text)
+
+                Try
+                    sqlConn.Open()
+                    Dim sqlReader As MySqlDataReader = sqlComm.ExecuteReader()
+
+                    If sqlReader.Read() Then
+                        title_tb.Text = sqlReader("Title").ToString()
+                        author_tb.Text = sqlReader("Author").ToString()
+                        public_tb.Text = sqlReader("Publication").ToString()
+                        copies_tb.Text = sqlReader("Copies").ToString()
+                    Else
+                        MessageBox.Show("ISBN doesn't exist, Please try again.")
+                    End If
+                    sqlReader.Close()
+                Catch ex As MySqlException
+                    MessageBox.Show("Error: " & ex.Message)
+                End Try
+            End Using
+        End Using
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles clear_btn.Click
+        'Clear Items in Textboxes
+        For Each Control As Control In Me.Controls
+            If TypeOf Control Is TextBox Then
+                Control.Text = String.Empty
+            End If
+            isbn_tb.Text = Nothing
+            title_tb.Text = Nothing
+            author_tb.Text = Nothing
+            public_tb.Text = Nothing
+            copies_tb.Text = Nothing
+        Next
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        'Delete Items in Database
+        Try
+            Delete("DELETE FROM bookreg WHERE ISBN = '" & isbn_tb.Text & "'")
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+        isbn_tb.Text = Nothing
+        title_tb.Text = Nothing
+        author_tb.Text = Nothing
+        public_tb.Text = Nothing
+        copies_tb.Text = Nothing
+    End Sub
+End Class
